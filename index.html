@@ -6,18 +6,16 @@
 
 <style>
 :root {
-  --bg: #0f0f0f;
-  --panel: #1a1a1a;
+  --bg: #0e0e0e;
+  --panel: #161616;
   --text: #eaeaea;
-  --muted: #999;
+  --muted: #888;
   --accent: #ff3d3d;
   --scale: 0.3;
   --zoom: 1;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -25,12 +23,13 @@ body {
   background: var(--bg);
   color: var(--text);
   display: flex;
+  min-height: 100vh;
 }
 
 /* ===== SIDEBAR ===== */
 .sidebar {
   width: 260px;
-  background: #121212;
+  background: #111;
   padding: 20px;
   border-right: 1px solid #222;
 }
@@ -59,6 +58,7 @@ body {
 .main {
   flex: 1;
   padding: 25px;
+  overflow-y: auto;
 }
 
 .section {
@@ -78,7 +78,18 @@ h2 {
   margin: 15px 0 25px;
 }
 
-/* ===== BANNER PREVIEW ===== */
+/* ===== PREVIEW BLOCK ===== */
+.preview-block {
+  margin-bottom: 45px;
+}
+
+.preview-block h3 {
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: #ccc;
+}
+
+/* ===== BANNER MASTER ===== */
 .master {
   width: calc(2560px * var(--scale));
   height: calc(1440px * var(--scale));
@@ -92,8 +103,10 @@ h2 {
   height: 100%;
   object-fit: cover;
   transform: scale(var(--zoom));
+  transform-origin: center;
 }
 
+/* Safe Area */
 .safe-area {
   position: absolute;
   width: calc(1546px * var(--scale));
@@ -102,18 +115,36 @@ h2 {
   left: 50%;
   transform: translate(-50%, -50%);
   border: 2px dashed var(--accent);
+  pointer-events: none;
 }
 
+/* ===== DESKTOP ===== */
 .desktop {
   width: calc(2560px * var(--scale));
   height: calc(423px * var(--scale));
-  overflow: hidden;
   background: #333;
+  overflow: hidden;
   position: relative;
-  margin-top: 20px;
 }
 
-.desktop img,
+.desktop img {
+  position: absolute;
+  width: calc(2560px * var(--scale));
+  height: calc(1440px * var(--scale));
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(var(--zoom));
+}
+
+/* ===== MOBILE ===== */
+.mobile {
+  width: calc(1546px * var(--scale));
+  height: calc(423px * var(--scale));
+  background: #333;
+  overflow: hidden;
+  position: relative;
+}
+
 .mobile img {
   position: absolute;
   width: calc(2560px * var(--scale));
@@ -123,28 +154,20 @@ h2 {
   transform: translate(-50%, -50%) scale(var(--zoom));
 }
 
-.mobile {
-  width: calc(1546px * var(--scale));
-  height: calc(423px * var(--scale));
-  overflow: hidden;
-  background: #333;
-  margin-top: 20px;
-}
-
 /* ===== TABLE ===== */
 table {
   border-collapse: collapse;
   width: 100%;
-  max-width: 700px;
+  max-width: 720px;
 }
 
-td, th {
+th, td {
   border: 1px solid #333;
   padding: 8px;
 }
 
 th {
-  background: #1e1e1e;
+  background: #1c1c1c;
 }
 
 /* ===== FOOTER ===== */
@@ -171,71 +194,81 @@ th {
 
 <div class="main">
 
-  <!-- ===== BANNER ===== -->
-  <div id="banner" class="section active">
-    <h2>YouTube Banner Tester</h2>
-    <input type="file" id="upload" accept="image/*">
+<!-- ===== BANNER TESTER ===== -->
+<div id="banner" class="section active">
+  <h2>YouTube Banner Tester</h2>
 
-    <div class="controls">
-      Zoom:
-      <input type="range" min="0.6" max="1.6" step="0.01" value="1" id="zoom">
-    </div>
+  <input type="file" id="upload" accept="image/*">
 
+  <div class="controls">
+    Zoom:
+    <input type="range" id="zoom" min="0.6" max="1.6" step="0.01" value="1">
+  </div>
+
+  <div class="preview-block">
+    <h3>TV / Full Banner (2560×1440)</h3>
     <div class="master">
       <img id="img-master">
       <div class="safe-area"></div>
     </div>
+  </div>
 
+  <div class="preview-block">
+    <h3>Desktop Preview (2560×423)</h3>
     <div class="desktop">
       <img id="img-desktop">
     </div>
+  </div>
 
+  <div class="preview-block">
+    <h3>Mobile Preview (Safe Area)</h3>
     <div class="mobile">
       <img id="img-mobile">
     </div>
   </div>
+</div>
 
-  <!-- ===== THUMBNAIL ===== -->
-  <div id="thumbnail" class="section">
-    <h2>YouTube Thumbnail Tester</h2>
-    <p>Coming soon (1280×720 preview)</p>
-  </div>
+<!-- ===== THUMBNAIL ===== -->
+<div id="thumbnail" class="section">
+  <h2>YouTube Thumbnail Tester</h2>
+  <p>Coming soon (1280×720 preview)</p>
+</div>
 
-  <!-- ===== GIF ===== -->
-  <div id="gif" class="section">
-    <h2>Animasi GIF Tester</h2>
-    <p>Coming soon (loop & compression test)</p>
-  </div>
+<!-- ===== GIF ===== -->
+<div id="gif" class="section">
+  <h2>Animasi GIF Tester</h2>
+  <p>Coming soon (loop & frame test)</p>
+</div>
 
-  <!-- ===== INFO ===== -->
-  <div id="info" class="section">
-    <h2>Ukuran Resmi YouTube</h2>
+<!-- ===== INFO ===== -->
+<div id="info" class="section">
+  <h2>Ukuran Resmi YouTube</h2>
 
-    <table>
-      <tr><th>Item</th><th>Ukuran</th></tr>
-      <tr><td>Banner (Full / TV)</td><td>2560 × 1440 px</td></tr>
-      <tr><td>Banner Safe Area</td><td>1546 × 423 px</td></tr>
-      <tr><td>Banner Desktop</td><td>2560 × 423 px</td></tr>
-      <tr><td>YouTube Thumbnail</td><td>1280 × 720 px (16:9)</td></tr>
-      <tr><td>Thumbnail Min Width</td><td>640 px</td></tr>
-      <tr><td>Max File Size</td><td>2 MB (Thumbnail)</td></tr>
-      <tr><td>Format</td><td>JPG, PNG, GIF (non-animated)</td></tr>
-    </table>
-  </div>
+  <table>
+    <tr><th>Item</th><th>Ukuran</th></tr>
+    <tr><td>Banner (TV / Full)</td><td>2560 × 1440 px</td></tr>
+    <tr><td>Banner Safe Area</td><td>1546 × 423 px</td></tr>
+    <tr><td>Banner Desktop</td><td>2560 × 423 px</td></tr>
+    <tr><td>YouTube Thumbnail</td><td>1280 × 720 px</td></tr>
+    <tr><td>Min Thumbnail Width</td><td>640 px</td></tr>
+    <tr><td>Max File Size</td><td>2 MB</td></tr>
+    <tr><td>Format</td><td>JPG, PNG, GIF (non-animated)</td></tr>
+  </table>
+</div>
 
-  <!-- ===== CONTACT ===== -->
-  <div id="contact" class="section">
-    <h2>Kontak</h2>
-    <p>
-      🔗 Website: <em>coming soon</em><br>
-      🔗 GitHub: <em>coming soon</em><br>
-      🔗 Email: <em>coming soon</em>
-    </p>
-  </div>
+<!-- ===== CONTACT ===== -->
+<div id="contact" class="section">
+  <h2>Kontak</h2>
+  <p>
+    🔗 Website: coming soon<br>
+    🔗 GitHub: coming soon<br>
+    🔗 Email: coming soon
+  </p>
+</div>
 
-  <div class="footer">
-    Built by <strong>VeilZeroFun</strong> • YouTube Tools
-  </div>
+<div class="footer">
+  Built by <strong>VeilZeroFun</strong> • YouTube Tools
+</div>
 
 </div>
 
@@ -258,7 +291,7 @@ upload.addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = () => imgs.forEach(i => i.src = reader.result);
+  reader.onload = () => imgs.forEach(img => img.src = reader.result);
   reader.readAsDataURL(file);
 });
 
