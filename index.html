@@ -1,33 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>YouTube Banner Preview Tool</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<title>YouTube Banner Preview Tool (Accurate)</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+  padding: 20px;
+}
+
+h1 {
+  margin-bottom: 10px;
+}
+
+input {
+  margin-bottom: 20px;
+}
+
+.preview-group {
+  margin-bottom: 30px;
+}
+
+.label {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+/* ===== MASTER SCALE ===== */
+:root {
+  --scale: 0.3; /* skala visual */
+}
+
+/* ===== TV / MASTER ===== */
+.master {
+  width: calc(2560px * var(--scale));
+  height: calc(1440px * var(--scale));
+  position: relative;
+  background: #ddd;
+  overflow: hidden;
+}
+
+.master img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Safe Area */
+.safe-area {
+  position: absolute;
+  width: calc(1546px * var(--scale));
+  height: calc(423px * var(--scale));
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px dashed red;
+  box-sizing: border-box;
+}
+
+/* ===== DESKTOP ===== */
+.desktop {
+  width: calc(2560px * var(--scale));
+  height: calc(423px * var(--scale));
+  overflow: hidden;
+  background: #ddd;
+  position: relative;
+}
+
+.desktop img {
+  width: calc(2560px * var(--scale));
+  height: calc(1440px * var(--scale));
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* ===== MOBILE ===== */
+.mobile {
+  width: calc(1546px * var(--scale));
+  height: calc(423px * var(--scale));
+  overflow: hidden;
+  background: #ddd;
+  position: relative;
+}
+
+.mobile img {
+  width: calc(2560px * var(--scale));
+  height: calc(1440px * var(--scale));
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
 </head>
+
 <body>
 
-<h1>YouTube Banner Preview (Simple)</h1>
+<h1>YouTube Banner Preview (Real & Accurate)</h1>
+<p>Upload banner 2560×1440 px • Safe Area terlihat di semua device</p>
 
-<input type="file" id="upload" accept="image/*" />
+<input type="file" id="upload" accept="image/*">
 
-<div class="preview-container">
-  <div class="desktop">
-    <p>Desktop Preview</p>
-    <div class="frame">
-      <img id="banner" />
-      <div class="safe-area"></div>
-    </div>
-  </div>
-
-  <div class="mobile">
-    <p>Mobile Preview</p>
-    <div class="frame mobile-frame">
-      <img id="banner-mobile" />
-    </div>
+<div class="preview-group">
+  <div class="label">TV / Full Banner (2560×1440)</div>
+  <div class="master">
+    <img id="img-master">
+    <div class="safe-area"></div>
   </div>
 </div>
 
-<script src="script.js"></script>
+<div class="preview-group">
+  <div class="label">Desktop Preview (2560×423 – crop tengah)</div>
+  <div class="desktop">
+    <img id="img-desktop">
+  </div>
+</div>
+
+<div class="preview-group">
+  <div class="label">Mobile Preview (Safe Area Only)</div>
+  <div class="mobile">
+    <img id="img-mobile">
+  </div>
+</div>
+
+<script>
+const upload = document.getElementById("upload");
+const imgs = [
+  document.getElementById("img-master"),
+  document.getElementById("img-desktop"),
+  document.getElementById("img-mobile")
+];
+
+upload.addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    imgs.forEach(img => img.src = reader.result);
+  };
+  reader.readAsDataURL(file);
+});
+</script>
+
 </body>
 </html>
