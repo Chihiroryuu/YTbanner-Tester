@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>YouTube Banner Preview Tool (Accurate)</title>
+<title>YouTube Banner Preview Tool (Accurate + Zoom)</title>
 
 <style>
 body {
@@ -12,28 +12,29 @@ body {
 }
 
 h1 {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
-input {
-  margin-bottom: 20px;
+p {
+  margin-top: 0;
+  color: #555;
 }
 
-.preview-group {
-  margin-bottom: 30px;
+.controls {
+  margin: 15px 0 25px;
 }
 
-.label {
+label {
   font-weight: bold;
-  margin-bottom: 6px;
 }
 
 /* ===== MASTER SCALE ===== */
 :root {
-  --scale: 0.3; /* skala visual */
+  --scale: 0.3;
+  --zoom: 1;
 }
 
-/* ===== TV / MASTER ===== */
+/* ===== MASTER (TV) ===== */
 .master {
   width: calc(2560px * var(--scale));
   height: calc(1440px * var(--scale));
@@ -46,6 +47,8 @@ input {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scale(var(--zoom));
+  transform-origin: center;
 }
 
 /* Safe Area */
@@ -58,6 +61,7 @@ input {
   transform: translate(-50%, -50%);
   border: 2px dashed red;
   box-sizing: border-box;
+  pointer-events: none;
 }
 
 /* ===== DESKTOP ===== */
@@ -74,7 +78,11 @@ input {
   height: calc(1440px * var(--scale));
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  left: 50%;
+  transform:
+    translate(-50%, -50%)
+    scale(var(--zoom));
+  transform-origin: center;
 }
 
 /* ===== MOBILE ===== */
@@ -92,17 +100,36 @@ input {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform:
+    translate(-50%, -50%)
+    scale(var(--zoom));
+  transform-origin: center;
+}
+
+/* Layout */
+.preview-group {
+  margin-bottom: 30px;
+}
+
+.label {
+  font-weight: bold;
+  margin-bottom: 6px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>YouTube Banner Preview (Real & Accurate)</h1>
-<p>Upload banner 2560×1440 px • Safe Area terlihat di semua device</p>
+<h1>YouTube Banner Preview (Real + Zoom)</h1>
+<p>Accurate crop based on official YouTube banner sizes</p>
 
 <input type="file" id="upload" accept="image/*">
+
+<div class="controls">
+  <label>Zoom: </label>
+  <input type="range" id="zoom" min="0.6" max="1.6" step="0.01" value="1">
+  <span id="zoomValue">100%</span>
+</div>
 
 <div class="preview-group">
   <div class="label">TV / Full Banner (2560×1440)</div>
@@ -113,7 +140,7 @@ input {
 </div>
 
 <div class="preview-group">
-  <div class="label">Desktop Preview (2560×423 – crop tengah)</div>
+  <div class="label">Desktop Preview (2560×423)</div>
   <div class="desktop">
     <img id="img-desktop">
   </div>
@@ -128,6 +155,10 @@ input {
 
 <script>
 const upload = document.getElementById("upload");
+const zoomSlider = document.getElementById("zoom");
+const zoomValue = document.getElementById("zoomValue");
+const root = document.documentElement;
+
 const imgs = [
   document.getElementById("img-master"),
   document.getElementById("img-desktop"),
@@ -143,6 +174,12 @@ upload.addEventListener("change", e => {
     imgs.forEach(img => img.src = reader.result);
   };
   reader.readAsDataURL(file);
+});
+
+zoomSlider.addEventListener("input", () => {
+  const zoom = zoomSlider.value;
+  root.style.setProperty("--zoom", zoom);
+  zoomValue.textContent = Math.round(zoom * 100) + "%";
 });
 </script>
 
