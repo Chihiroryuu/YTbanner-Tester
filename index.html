@@ -11,7 +11,8 @@
   --text: #eaeaea;
   --muted: #888;
   --accent: #ff3d3d;
-  --scale: 0.28;
+
+  --scale: 0.28; /* banner scale */
   --zoom: 1;
 }
 
@@ -92,7 +93,7 @@ h2 { margin-top: 0; }
   overflow: hidden;
 }
 
-/* ===== BANNER ===== */
+/* ================= BANNER ================= */
 .banner-master {
   width: calc(2560px * var(--scale));
   height: calc(1440px * var(--scale));
@@ -108,27 +109,19 @@ h2 { margin-top: 0; }
   height: calc(423px * var(--scale));
 }
 
-/* ===== THUMBNAIL ===== */
-.thumbnail {
-  width: 640px;
-  height: 360px;
-}
-
-/* ===== GIF ===== */
-.gif-preview {
-  width: 480px;
-  height: 270px;
-}
-
-/* ===== IMAGE FIT ===== */
-.preview-box img {
-  width: 100%;
-  height: 100%;
+.banner-master img,
+.banner-desktop img,
+.banner-mobile img {
+  position: absolute;
+  width: calc(2560px * var(--scale));
+  height: calc(1440px * var(--scale));
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(var(--zoom));
   object-fit: cover;
-  transform: scale(var(--zoom));
 }
 
-/* ===== SAFE AREA ===== */
+/* Safe Area */
 .safe-area {
   position: absolute;
   width: calc(1546px * var(--scale));
@@ -137,6 +130,35 @@ h2 { margin-top: 0; }
   left: 50%;
   transform: translate(-50%, -50%);
   border: 2px dashed var(--accent);
+  pointer-events: none;
+}
+
+/* ================= THUMBNAIL ================= */
+.thumbnail {
+  width: 640px;
+  height: 360px;
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(var(--zoom));
+}
+
+/* ================= GIF (DYNAMIC) ================= */
+.gif-preview {
+  max-width: 600px;
+  max-height: 600px;
+  width: auto;
+  height: auto;
+}
+
+.gif-preview img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transform: scale(var(--zoom));
 }
 
 /* ===== FOOTER ===== */
@@ -226,7 +248,7 @@ h2 { margin-top: 0; }
   </div>
 
   <div class="preview-block">
-    <div class="preview-box gif-preview">
+    <div class="preview-box gif-preview" id="gifBox">
       <img id="gifPreview">
     </div>
   </div>
@@ -236,9 +258,9 @@ h2 { margin-top: 0; }
 <div id="info" class="section">
   <h2>Ukuran Resmi YouTube</h2>
   <ul>
-    <li>Banner: 2560 × 1440 px</li>
-    <li>Safe Area: 1546 × 423 px</li>
-    <li>Desktop Banner: 2560 × 423 px</li>
+    <li>Banner (TV): 2560 × 1440 px</li>
+    <li>Banner Safe Area: 1546 × 423 px</li>
+    <li>Banner Desktop: 2560 × 423 px</li>
     <li>Thumbnail: 1280 × 720 px (16:9)</li>
     <li>Max Thumbnail Size: 2 MB</li>
     <li>Format: JPG, PNG, GIF</li>
@@ -248,7 +270,11 @@ h2 { margin-top: 0; }
 <!-- ================= CONTACT ================= -->
 <div id="contact" class="section">
   <h2>Kontak</h2>
-  <p>🔗 Website: coming soon<br>🔗 GitHub: coming soon</p>
+  <p>
+    🔗 Website: coming soon<br>
+    🔗 GitHub: coming soon<br>
+    🔗 Email: coming soon
+  </p>
 </div>
 
 <div class="footer">
@@ -263,7 +289,8 @@ function setZoom(value) {
   document.documentElement.style.setProperty("--zoom", value);
 }
 
-function loadFile(input, targets) {
+/* ===== FILE LOADERS ===== */
+function loadImage(input, targets) {
   input.addEventListener("change", e => {
     const file = e.target.files[0];
     if (!file) return;
@@ -273,27 +300,51 @@ function loadFile(input, targets) {
   });
 }
 
-loadFile(
+/* Banner */
+loadImage(
   document.getElementById("uploadBanner"),
-  [
-    bannerMaster,
-    bannerDesktop,
-    bannerMobile
-  ]
+  [bannerMaster, bannerDesktop, bannerMobile]
 );
 
-loadFile(
+/* Thumbnail */
+loadImage(
   document.getElementById("uploadThumb"),
   [thumbPreview]
 );
 
-loadFile(
-  document.getElementById("uploadGif"),
-  [gifPreview]
-);
+/* GIF (dynamic ratio) */
+const gifInput = document.getElementById("uploadGif");
+const gifImg = document.getElementById("gifPreview");
+const gifBox = document.getElementById("gifBox");
 
+gifInput.addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    gifImg.src = reader.result;
+
+    gifImg.onload = () => {
+      const ratio = gifImg.naturalWidth / gifImg.naturalHeight;
+      const max = 600;
+
+      if (ratio >= 1) {
+        gifBox.style.width = max + "px";
+        gifBox.style.height = max / ratio + "px";
+      } else {
+        gifBox.style.height = max + "px";
+        gifBox.style.width = max * ratio + "px";
+      }
+    };
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ===== MENU ===== */
 function show(id) {
-  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".section")
+    .forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 </script>
