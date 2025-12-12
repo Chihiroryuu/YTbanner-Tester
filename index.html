@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>YouTube Banner Preview Tool</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<h1>YouTube Banner Preview (Simple)</h1>
+
+<input type="file" id="upload" accept="image/*" />
+
+<div class="preview-container">
+  <div class="desktop">
+    <p>Desktop Preview</p>
+    <div class="frame">
+      <img id="banner" />
+      <div class="safe-area"></div>
+    </div>
+  </div>
+
+  <div class="mobile">
+    <p>Mobile Preview</p>
+    <div class="frame mobile-frame">
+      <img id="banner-mobile" />
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
