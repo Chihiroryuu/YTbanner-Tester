@@ -6,12 +6,12 @@
 
 <style>
 :root {
-  --bg: #0e0e0e;
+  --bg: #0b0b0b;
   --panel: #161616;
   --text: #eaeaea;
   --muted: #888;
   --accent: #ff3d3d;
-  --scale: 0.3;
+  --scale: 0.28;
   --zoom: 1;
 }
 
@@ -32,6 +32,7 @@ body {
   background: #111;
   padding: 20px;
   border-right: 1px solid #222;
+  flex-shrink: 0;
 }
 
 .sidebar h1 {
@@ -61,52 +62,73 @@ body {
   overflow-y: auto;
 }
 
-.section {
-  display: none;
+.main-inner {
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-.section.active {
-  display: block;
-}
+/* ===== SECTION ===== */
+.section { display: none; }
+.section.active { display: block; }
 
-h2 {
-  margin-top: 0;
-}
+h2 { margin-top: 0; }
 
 /* ===== CONTROLS ===== */
 .controls {
-  margin: 15px 0 25px;
+  margin: 15px 0 30px;
 }
 
-/* ===== PREVIEW BLOCK ===== */
+/* ===== PREVIEW ===== */
 .preview-block {
-  margin-bottom: 45px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 60px;
 }
 
-.preview-block h3 {
-  margin-bottom: 10px;
-  font-size: 15px;
-  color: #ccc;
-}
-
-/* ===== BANNER MASTER ===== */
-.master {
-  width: calc(2560px * var(--scale));
-  height: calc(1440px * var(--scale));
-  background: #333;
+.preview-box {
+  background: #2a2a2a;
   position: relative;
   overflow: hidden;
 }
 
-.master img {
+/* ===== BANNER ===== */
+.banner-master {
+  width: calc(2560px * var(--scale));
+  height: calc(1440px * var(--scale));
+}
+
+.banner-desktop {
+  width: calc(2560px * var(--scale));
+  height: calc(423px * var(--scale));
+}
+
+.banner-mobile {
+  width: calc(1546px * var(--scale));
+  height: calc(423px * var(--scale));
+}
+
+/* ===== THUMBNAIL ===== */
+.thumbnail {
+  width: 640px;
+  height: 360px;
+}
+
+/* ===== GIF ===== */
+.gif-preview {
+  width: 480px;
+  height: 270px;
+}
+
+/* ===== IMAGE FIT ===== */
+.preview-box img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transform: scale(var(--zoom));
-  transform-origin: center;
 }
 
-/* Safe Area */
+/* ===== SAFE AREA ===== */
 .safe-area {
   position: absolute;
   width: calc(1546px * var(--scale));
@@ -115,66 +137,14 @@ h2 {
   left: 50%;
   transform: translate(-50%, -50%);
   border: 2px dashed var(--accent);
-  pointer-events: none;
-}
-
-/* ===== DESKTOP ===== */
-.desktop {
-  width: calc(2560px * var(--scale));
-  height: calc(423px * var(--scale));
-  background: #333;
-  overflow: hidden;
-  position: relative;
-}
-
-.desktop img {
-  position: absolute;
-  width: calc(2560px * var(--scale));
-  height: calc(1440px * var(--scale));
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(var(--zoom));
-}
-
-/* ===== MOBILE ===== */
-.mobile {
-  width: calc(1546px * var(--scale));
-  height: calc(423px * var(--scale));
-  background: #333;
-  overflow: hidden;
-  position: relative;
-}
-
-.mobile img {
-  position: absolute;
-  width: calc(2560px * var(--scale));
-  height: calc(1440px * var(--scale));
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(var(--zoom));
-}
-
-/* ===== TABLE ===== */
-table {
-  border-collapse: collapse;
-  width: 100%;
-  max-width: 720px;
-}
-
-th, td {
-  border: 1px solid #333;
-  padding: 8px;
-}
-
-th {
-  background: #1c1c1c;
 }
 
 /* ===== FOOTER ===== */
 .footer {
-  margin-top: 40px;
+  margin-top: 60px;
   color: var(--muted);
   font-size: 13px;
+  text-align: center;
 }
 </style>
 </head>
@@ -193,77 +163,92 @@ th {
 </div>
 
 <div class="main">
+<div class="main-inner">
 
-<!-- ===== BANNER TESTER ===== -->
+<!-- ================= BANNER ================= -->
 <div id="banner" class="section active">
   <h2>YouTube Banner Tester</h2>
-
-  <input type="file" id="upload" accept="image/*">
+  <input type="file" id="uploadBanner" accept="image/*">
 
   <div class="controls">
     Zoom:
-    <input type="range" id="zoom" min="0.6" max="1.6" step="0.01" value="1">
+    <input type="range" min="0.6" max="1.6" step="0.01" value="1"
+      oninput="setZoom(this.value)">
   </div>
 
   <div class="preview-block">
-    <h3>TV / Full Banner (2560×1440)</h3>
-    <div class="master">
-      <img id="img-master">
+    <div class="preview-box banner-master">
+      <img id="bannerMaster">
       <div class="safe-area"></div>
     </div>
   </div>
 
   <div class="preview-block">
-    <h3>Desktop Preview (2560×423)</h3>
-    <div class="desktop">
-      <img id="img-desktop">
+    <div class="preview-box banner-desktop">
+      <img id="bannerDesktop">
     </div>
   </div>
 
   <div class="preview-block">
-    <h3>Mobile Preview (Safe Area)</h3>
-    <div class="mobile">
-      <img id="img-mobile">
+    <div class="preview-box banner-mobile">
+      <img id="bannerMobile">
     </div>
   </div>
 </div>
 
-<!-- ===== THUMBNAIL ===== -->
+<!-- ================= THUMBNAIL ================= -->
 <div id="thumbnail" class="section">
   <h2>YouTube Thumbnail Tester</h2>
-  <p>Coming soon (1280×720 preview)</p>
+  <input type="file" id="uploadThumb" accept="image/*">
+
+  <div class="controls">
+    Zoom:
+    <input type="range" min="0.6" max="1.6" step="0.01" value="1"
+      oninput="setZoom(this.value)">
+  </div>
+
+  <div class="preview-block">
+    <div class="preview-box thumbnail">
+      <img id="thumbPreview">
+    </div>
+  </div>
 </div>
 
-<!-- ===== GIF ===== -->
+<!-- ================= GIF ================= -->
 <div id="gif" class="section">
   <h2>Animasi GIF Tester</h2>
-  <p>Coming soon (loop & frame test)</p>
+  <input type="file" id="uploadGif" accept="image/gif,image/*">
+
+  <div class="controls">
+    Zoom:
+    <input type="range" min="0.6" max="1.6" step="0.01" value="1"
+      oninput="setZoom(this.value)">
+  </div>
+
+  <div class="preview-block">
+    <div class="preview-box gif-preview">
+      <img id="gifPreview">
+    </div>
+  </div>
 </div>
 
-<!-- ===== INFO ===== -->
+<!-- ================= INFO ================= -->
 <div id="info" class="section">
   <h2>Ukuran Resmi YouTube</h2>
-
-  <table>
-    <tr><th>Item</th><th>Ukuran</th></tr>
-    <tr><td>Banner (TV / Full)</td><td>2560 × 1440 px</td></tr>
-    <tr><td>Banner Safe Area</td><td>1546 × 423 px</td></tr>
-    <tr><td>Banner Desktop</td><td>2560 × 423 px</td></tr>
-    <tr><td>YouTube Thumbnail</td><td>1280 × 720 px</td></tr>
-    <tr><td>Min Thumbnail Width</td><td>640 px</td></tr>
-    <tr><td>Max File Size</td><td>2 MB</td></tr>
-    <tr><td>Format</td><td>JPG, PNG, GIF (non-animated)</td></tr>
-  </table>
+  <ul>
+    <li>Banner: 2560 × 1440 px</li>
+    <li>Safe Area: 1546 × 423 px</li>
+    <li>Desktop Banner: 2560 × 423 px</li>
+    <li>Thumbnail: 1280 × 720 px (16:9)</li>
+    <li>Max Thumbnail Size: 2 MB</li>
+    <li>Format: JPG, PNG, GIF</li>
+  </ul>
 </div>
 
-<!-- ===== CONTACT ===== -->
+<!-- ================= CONTACT ================= -->
 <div id="contact" class="section">
   <h2>Kontak</h2>
-  <p>
-    🔗 Website: coming soon<br>
-    🔗 GitHub: coming soon<br>
-    🔗 Email: coming soon
-  </p>
+  <p>🔗 Website: coming soon<br>🔗 GitHub: coming soon</p>
 </div>
 
 <div class="footer">
@@ -271,29 +256,41 @@ th {
 </div>
 
 </div>
+</div>
 
 <script>
-const root = document.documentElement;
-const zoom = document.getElementById("zoom");
-const upload = document.getElementById("upload");
+function setZoom(value) {
+  document.documentElement.style.setProperty("--zoom", value);
+}
 
-const imgs = [
-  document.getElementById("img-master"),
-  document.getElementById("img-desktop"),
-  document.getElementById("img-mobile")
-];
+function loadFile(input, targets) {
+  input.addEventListener("change", e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => targets.forEach(t => t.src = reader.result);
+    reader.readAsDataURL(file);
+  });
+}
 
-zoom.addEventListener("input", () => {
-  root.style.setProperty("--zoom", zoom.value);
-});
+loadFile(
+  document.getElementById("uploadBanner"),
+  [
+    bannerMaster,
+    bannerDesktop,
+    bannerMobile
+  ]
+);
 
-upload.addEventListener("change", e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => imgs.forEach(img => img.src = reader.result);
-  reader.readAsDataURL(file);
-});
+loadFile(
+  document.getElementById("uploadThumb"),
+  [thumbPreview]
+);
+
+loadFile(
+  document.getElementById("uploadGif"),
+  [gifPreview]
+);
 
 function show(id) {
   document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
